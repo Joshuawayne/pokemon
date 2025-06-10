@@ -1,4 +1,4 @@
-# Pokédex Challenge - by [Your Name]
+# Pokédex Challenge - by Joshua Mercy Odhiambo
 
 This is a solution to the Tevvo Build Software Developer Intern Challenge. It is a responsive Vue.js web application that fetches and displays data from the PokéAPI, includes user authentication via Supabase, and is unit tested with Vitest.
 
@@ -6,7 +6,13 @@ This is a solution to the Tevvo Build Software Developer Intern Challenge. It is
 
 ### **Live Demo**
 
-**You can view the live application here: [Link to your deployed app on Netlify/Vercel]**
+**You can view the live application here: https://pokemp.netlify.app/**
+### **Test Credentials**
+
+To log in to the application, please use the following test account:
+
+*   **Email:** `mercyjoshu0@gmail.com`
+*   **Password:** `12345678`
 
 ---
 
@@ -19,7 +25,7 @@ This project was built with the narrative of a "My First Pokédex" in mind, aimi
 *   **Real-time Search:** A client-side search feature allows users to instantly filter the Pokémon list.
 *   **Interactive UI:** Pokémon are displayed as holographic, 3D-tilting cards that react to the user's cursor for an engaging experience.
 *   **Responsive Design:** The application is fully responsive and provides a seamless experience on mobile, tablet, and desktop devices.
-*   **Animated Splash Screen:** A thematic splash screen provides an immersive entry into the application on the first visit of a session.
+*   **Animated Splash Screen:** The splash screen provides an  entry into the application on the first visit of a session.
 
 ---
 
