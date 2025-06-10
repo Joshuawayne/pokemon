@@ -6,7 +6,7 @@ This is a solution to the Tevvo Build Software Developer Intern Challenge. It is
 
 ### **Live Demo**
 
-**You can view the live application here: https://pokemp.netlify.app/**
+**You can view the live application here: https://pokemonee.netlify.app/login**
 ### **Test Credentials**
 
 To log in to the application, please use the following test account:
