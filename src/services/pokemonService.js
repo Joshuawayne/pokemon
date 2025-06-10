@@ -4,12 +4,12 @@ const POKEAPI_BASE_URL = 'https://pokeapi.co/api/v2';
 
 /**
  * Fetches a paginated list of Pokémon from the PokéAPI.
- * This function is a "query" - it asks for data and returns it.
- * It has no side effects.
+ * This function now returns both the results for the current page
+ * and the total count of all Pokémon for pagination purposes.
  *
  * @param {number} limit - The number of Pokémon to fetch.
  * @param {number} offset - The starting point in the Pokémon list.
- * @returns {Promise<Array>} A promise that resolves to an array of Pokémon results.
+ * @returns {Promise<{results: Array, count: number}>} A promise that resolves to an object.
  * @throws {Error} If the network request fails.
  */
 export async function getPokemonList(limit = 20, offset = 0) {
@@ -27,8 +27,15 @@ export async function getPokemonList(limit = 20, offset = 0) {
     
     const data = await response.json();
     
-    // The API returns an object with a 'results' property, which is the array we want.
-    return data.results;
+    // ===============================================================
+    // UPDATE: Return an object with both results and the total count.
+    // This gives our components all the information they need for pagination.
+    // ===============================================================
+    return {
+      results: data.results,
+      count: data.count
+    };
+
   } catch (error) {
     // Log the detailed error for debugging purposes.
     console.error('Failed to fetch Pokémon list:', error);
@@ -40,6 +47,7 @@ export async function getPokemonList(limit = 20, offset = 0) {
 
 /**
  * Fetches detailed information for a single Pokémon.
+ * (This function has not been changed).
  *
  * @param {string} name - The name of the Pokémon to fetch.
  * @returns {Promise<Object>} A promise that resolves to the detailed Pokémon object.

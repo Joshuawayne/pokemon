@@ -1,72 +1,92 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import PokemonCard from '../components/PokemonCard.vue';
-// Import our clean, dedicated service function.
 import { getPokemonList } from '../services/pokemonService';
-// Import the header component to use in this view.
 import AppHeader from '../components/AppHeader.vue';
+import PokemonCard from '../components/PokemonCard.vue';
+//import PokemonCardSkeleton from '../components/PokemonCardSkeleton.vue'; // We'll add this next
 
 // --- State Management ---
-// A ref to hold the array of Pokémon we fetch.
 const pokemonList = ref([]);
-// A ref to manage the loading state for a better user experience.
 const isLoading = ref(true);
-// A ref to hold any potential error messages.
 const error = ref(null);
-
-// NEW: A ref to hold the user's search input.
-// It's a "ref" because it's a piece of reactive state that can change.
 const searchText = ref('');
 
+// --- Pagination State ---
+const POKEMON_PER_PAGE = 24;
+const currentPage = ref(1);
+const totalPokemon = ref(0);
+
 // --- Computed Properties ---
-// A computed property is a value that is derived from other reactive state.
-// It will automatically re-calculate whenever its dependencies (searchText or pokemonList) change.
-// This is the most efficient and declarative way to create a filtered list in Vue.
+// Computes the total number of pages needed.
+const totalPages = computed(() => {
+  if (totalPokemon.value === 0) return 1;
+  // Math.ceil rounds up to ensure we have a page for any remaining Pokémon.
+  return Math.ceil(totalPokemon.value / POKEMON_PER_PAGE);
+});
+
+// The filtered list now only operates on the current page's data.
 const filteredPokemon = computed(() => {
-  // If there's no search text, return the full list.
   if (!searchText.value) {
     return pokemonList.value;
   }
-  // Otherwise, filter the list.
-  // We convert both the Pokémon name and the search text to lowercase
-  // to ensure the search is case-insensitive.
   return pokemonList.value.filter(pokemon =>
     pokemon.name.toLowerCase().includes(searchText.value.toLowerCase())
   );
 });
 
-// --- Lifecycle Hooks ---
-onMounted(async () => {
+// --- Data Fetching Logic ---
+/**
+ * A reusable function to fetch Pokémon for a specific page.
+ * This centralizes our data fetching logic and state updates.
+ */
+async function fetchPaginatedPokemon(page) {
+  // Guard clause: Don't fetch if the page is out of bounds.
+  if (page < 1 || (page > totalPages.value && totalPages.value > 0)) {
+    return;
+  }
+  
+  isLoading.value = true;
+  error.value = null;
+
   try {
-    pokemonList.value = await getPokemonList(151);
+    // Calculate the offset for the API call based on the page number.
+    const offset = (page - 1) * POKEMON_PER_PAGE;
+    const data = await getPokemonList(POKEMON_PER_PAGE, offset);
+    
+    pokemonList.value = data.results;
+    totalPokemon.value = data.count;
+    currentPage.value = page; // Update current page only on successful fetch
+
   } catch (err) {
     error.value = 'Failed to load Pokémon. Please try again later.';
-    console.error(err); // Keep the detailed error for developers.
+    console.error(err);
   } finally {
-    // This always runs, ensuring the loading spinner is hidden
-    // whether the request succeeded or failed.
     isLoading.value = false;
   }
+}
+
+// --- Navigation Functions ---
+function nextPage() {
+  fetchPaginatedPokemon(currentPage.value + 1);
+}
+
+function previousPage() {
+  fetchPaginatedPokemon(currentPage.value - 1);
+}
+
+// --- Lifecycle Hooks ---
+// onMounted now has a single, clear responsibility: kick off the initial fetch.
+onMounted(() => {
+  fetchPaginatedPokemon(1); // Fetch the first page on load.
 });
 </script>
 
 <template>
-  <!-- The AppHeader is included here to be part of the layout for this view. -->
   <AppHeader />
 
   <main class="container p-4 mx-auto">
     <!-- Search Input Field -->
     <div class="mb-6">
-      <!-- 
-        ===============================================================
-        UPDATE: The <input> tag below has been fixed.
-        HOW: A forward slash "/" was added before the closing ">".
-        WHY: In Vue templates, all tags must be explicitly closed.
-             Tags like <input>, <img>, and <br> that don't have content
-             are called "self-closing" tags and must end with "/>".
-             The original code was missing this, causing a compiler error.
-        ===============================================================
-      -->
       <input
         type="text"
         v-model="searchText"
@@ -93,14 +113,37 @@ onMounted(async () => {
         <p class="text-xl">No Pokémon found for "{{ searchText }}"</p>
       </div>
 
- <div v-else class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
-  <!-- We now loop and render a PokemonCard for each item -->
-  <PokemonCard 
-    v-for="pokemon in filteredPokemon"
-    :key="pokemon.name"
-    :pokemon="pokemon" 
-  />
-</div>
+      <!-- Grid of Pokémon cards -->
+      <div v-else class="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        <PokemonCard 
+          v-for="pokemon in filteredPokemon"
+          :key="pokemon.name"
+          :pokemon="pokemon" 
+        />
+      </div>
+    </div>
+
+    <!-- Pagination Controls Section -->
+    <div v-if="!isLoading && !error" class="flex items-center justify-center mt-8 space-x-4">
+      <button
+        @click="previousPage"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 font-bold text-white bg-blue-600 rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700"
+      >
+        ← Previous
+      </button>
+      
+      <span class="text-lg font-semibold">
+        Page {{ currentPage }} of {{ totalPages }}
+      </span>
+
+      <button
+        @click="nextPage"
+        :disabled="currentPage === totalPages"
+        class="px-4 py-2 font-bold text-white bg-blue-600 rounded disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-700"
+      >
+        Next →
+      </button>
     </div>
   </main>
 </template>
