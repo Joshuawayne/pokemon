@@ -86,6 +86,8 @@ This project uses Vitest for unit testing. The tests are co-located with the sou
 
 Here is the coverage report for the tested utility function, `src/utils/formatter.js`, demonstrating 100% test coverage for that module.
 
-![Test Coverage Report](coverage.png)
+![Test Coverage Report]
+![coverage](https://github.com/user-attachments/assets/587b465d-d7de-4f1a-8bdc-4fe9978d26ca)
+
 
 ---
