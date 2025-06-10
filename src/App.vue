@@ -1,85 +1,30 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref } from 'vue';
+import { RouterView } from 'vue-router';
+import SplashScreen from './components/SplashScreen.vue';
+
+// A reactive flag to control the splash screen's visibility.
+const showSplash = ref(true);
+
+// This function will be called by the SplashScreen component when it's done.
+function onSplashCompleted() {
+  // Set the flag to false to hide the splash screen.
+  showSplash.value = false;
+  // Use sessionStorage to "remember" that we've shown the splash screen.
+  // This prevents it from re-appearing on page refresh.
+  // sessionStorage is cleared when the browser tab is closed.
+  sessionStorage.setItem('splashShown', 'true');
+}
+
+// On initial load, check if we've already shown the splash screen in this session.
+if (sessionStorage.getItem('splashShown')) {
+  showSplash.value = false;
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+  <!-- Conditionally render the SplashScreen using v-if -->
+  <SplashScreen v-if="showSplash" @completed="onSplashCompleted" />
+  <!-- The rest of the app is only rendered after the splash screen is hidden -->
+  <RouterView v-else />
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>

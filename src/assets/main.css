@@ -1,35 +1,23 @@
-@import './base.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+/* Define Pokémon type colors as CSS variables for reusability */
+:root {
+  --color-grass: #78C850;
+  --color-fire: #F08030;
+  --color-water: #6890F0;
+  --color-bug: #A8B820;
+  --color-normal: #A8A878;
+  --color-poison: #A040A0;
+  --color-electric: #F8D030;
+  --color-ground: #E0C068;
+  --color-fairy: #EE99AC;
+  --color-fighting: #C03028;
+  --color-psychic: #F85888;
+  --color-rock: #B8A038;
+  --color-ghost: #705898;
+  --color-ice: #98D8D8;
+  --color-dragon: #7038F8;
+  --color-flying: #A890F0;
 }
